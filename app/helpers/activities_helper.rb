@@ -47,6 +47,10 @@ module ActivitiesHelper
       %(#{person_link(person)}'s description has changed.)
     when "Event"
       %(#{person_link(person)} has created a new event: #{event_link(activity.item.title, activity.item)}.)
+    when "EventAttendee"
+      event = activity.item.event
+      %(#{person_link(person)} is attending #{someones(event.person, person)} event: 
+        #{event_link(event.title, event)}.)
     else
       # TODO: make this a more graceful falure (?).
       raise "Invalid activity type #{activity_type(activity).inspect}"
@@ -97,6 +101,9 @@ module ActivitiesHelper
       %(#{person_link(person)}'s description has changed.)
     when "Event"
       %(#{person_link(person)}'s has created a new #{event_link("event", activity.item)}.)
+    when "EventAttendee"
+      event = activity.item.event
+      %(#{person_link(person)} is attending #{someones(event.person, person)} #{event_link("event", event)}.)
     else
       raise "Invalid activity type #{activity_type(activity).inspect}"
     end
@@ -128,7 +135,9 @@ module ActivitiesHelper
             when "Person"
               "edit.gif"
             when "Event"
-              "event.gif"
+              "time.gif"
+            when "EventAttendee"
+              "check.gif"
             else
               # TODO: make this a more graceful falure (?).
               raise "Invalid activity type #{activity_type(activity).inspect}"
