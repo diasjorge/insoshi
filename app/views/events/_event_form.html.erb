@@ -22,6 +22,10 @@
                                :valid_date_check => "date >= (new Date()).stripTime()" %>
 </div>
 <div class="form_row full">
+  <%= f.label :location %>
+  <%= f.text_field :location, :maxLength => 255 %> 
+</div>
+<div class="form_row full">
   <%= f.label :reminder %>
   <%= f.check_box :reminder %> 
 </div>

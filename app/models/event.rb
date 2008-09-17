@@ -2,8 +2,10 @@ class Event < ActiveRecord::Base
   include ActivityLogger
 
   MAX_DESCRIPTION_LENGTH = MAX_STRING_LENGTH
+  MAX_LOCATION_LENGTH = MAX_STRING_LENGTH
   MAX_TITLE_LENGTH = 40
   PRIVACY = { :public => 1, :contacts => 2 }
+  FEED_SIZE = 10
 
   belongs_to :person
   has_many :event_attendees
@@ -14,6 +16,7 @@ class Event < ActiveRecord::Base
   validates_presence_of :title, :start_time, :person, :privacy
   validates_length_of :title, :maximum => MAX_TITLE_LENGTH
   validates_length_of :description, :maximum => MAX_DESCRIPTION_LENGTH, :allow_blank => true
+  validates_length_of :location, :maximum => MAX_LOCATION_LENGTH, :allow_blank => true
 
   named_scope :person_events, 
               lambda { |person| { :conditions => ["person_id = ? OR (privacy = ? OR (privacy = ? AND (person_id IN (?))))", 
@@ -34,6 +37,14 @@ class Event < ActiveRecord::Base
   
   def self.daily_events(date)
     self.period_events(date.beginning_of_day, date.to_time.end_of_day)
+  end
+
+  def feed
+    sql = "(item_id = ? AND item_type = 'Event') OR (item_type = 'EventAttendee' and item_id in (?)) OR (item_type = 'Comment' and item_id in (?))"
+    activities = Activity.find(:all, 
+                               :conditions => [sql,Event.first,self.event_attendee_ids,self.comment_ids],
+                               :order => 'created_at desc',
+                               :limit => FEED_SIZE)
   end
 
   def validate

@@ -14,6 +14,11 @@
   <p>
     <%=h event.description %>
   </p>
+  <% unless event.location.empty? -%>
+  <p>
+    <b>Location:</b> <%=h event.location %>
+  </p>
+  <% end -%>
   <p class="meta">
     Created by <%= person_link event.person %>
     <%= time_ago_in_words(event.created_at) %> ago
