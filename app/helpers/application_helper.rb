@@ -29,8 +29,10 @@ module ApplicationHelper
       people =  menu_element("People", admin_people_path)
       forums =  menu_element(inflect("Forum", Forum.count),
                              admin_forums_path)
+      categories =  menu_element(inflect("Category", Category.count),
+                                 admin_categories_path)
       preferences = menu_element("Prefs", admin_preferences_path)
-      links = [home, people, forums, preferences]
+      links = [home, people, forums, categories, preferences]
     else
       links = [home, people]
     end

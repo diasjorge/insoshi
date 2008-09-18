@@ -26,6 +26,10 @@
   <%= f.text_field :location, :maxLength => 255 %> 
 </div>
 <div class="form_row full">
+  <%= f.label :category_id %>
+  <%= f.select :category_id, Category.find(:all).collect { |c| [c.name, c.id] } %>
+</div>
+<div class="form_row full">
   <%= f.label :reminder %>
   <%= f.check_box :reminder %> 
 </div>

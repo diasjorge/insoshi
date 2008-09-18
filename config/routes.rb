@@ -1,4 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
+
   map.resources :events, :member => { :attend => :get, 
                                       :unattend => :get } do |event|
     event.resources :comments
@@ -31,6 +32,7 @@ ActionController::Routing::Routes.draw do |map|
         topic.resources :posts
       end
     end    
+    admin.resources :categories
   end
   map.resources :blogs do |blog|
     blog.resources :posts do |post|

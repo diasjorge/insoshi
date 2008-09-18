@@ -8,12 +8,13 @@ class Event < ActiveRecord::Base
   FEED_SIZE = 10
 
   belongs_to :person
+  belongs_to :category
   has_many :event_attendees
   has_many :attendees, :through => :event_attendees, :source => :person
   has_many :comments, :as => :commentable, :order => 'created_at DESC'
   has_many :activities, :foreign_key => "item_id", :dependent => :destroy
 
-  validates_presence_of :title, :start_time, :person, :privacy
+  validates_presence_of :title, :start_time, :person, :privacy, :category
   validates_length_of :title, :maximum => MAX_TITLE_LENGTH
   validates_length_of :description, :maximum => MAX_DESCRIPTION_LENGTH, :allow_blank => true
   validates_length_of :location, :maximum => MAX_LOCATION_LENGTH, :allow_blank => true
