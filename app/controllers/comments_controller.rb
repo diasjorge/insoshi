@@ -84,6 +84,8 @@ class CommentsController < ApplicationController
         current_person?(person) or current_person?(@comment.commenter)
       elsif blog?
         current_person?(person)
+      elsif event?
+        current_person?(person)
       end
     end
     
