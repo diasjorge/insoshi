@@ -8,6 +8,7 @@ public:
   end_time: 2008-08-19 19:38:49
   reminder: false
   privacy: 1 # public
+  category: general
 
 private:
   title: MyString
@@ -17,3 +18,4 @@ private:
   end_time: 2008-08-19 19:38:49
   reminder: false
   privacy: 2 # contacts
+  category: general

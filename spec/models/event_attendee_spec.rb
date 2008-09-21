@@ -9,7 +9,7 @@ describe EventAttendee do
   end
   
   it 'should be valid' do
-    @event.should be_valid
+    @event_attendee.should be_valid
   end
 
   describe "event_attendee activity associations" do

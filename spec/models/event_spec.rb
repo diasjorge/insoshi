@@ -9,7 +9,8 @@ describe Event do
       :start_time => Time.now,
       :end_time => Time.now,
       :reminder => false,
-      :privacy => 1
+      :privacy => 1,
+      :category => categories(:general)
     }
   end
 
