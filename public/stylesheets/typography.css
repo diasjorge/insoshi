@@ -97,21 +97,25 @@ pre {
   margin: 1em 0;
   padding: 1em;
 }
-a:link,a:visited {
-  color: #069;
+#content a:link, #content a:visited {
   font-weight: bold;
   text-decoration: none;
+}
+a:link, a:visited {
+	color:#006699;
+	font-weight:bold;
+	text-decoration:none;
 }
 /* Specific elements */
 p.welcome {
   color: #fff;
   font-size: 12px
 }
-
 p.welcome a, p.welcome a:visited {
   color: #fff;
   text-decoration: underline;
 }
+
 
 #footer p {
   font-size: 12px;
@@ -127,7 +131,9 @@ p.welcome a, p.welcome a:visited {
   text-align: right;
   width: 100%;
 }
-
+#content div li.more a {
+	margin-right: 4px;
+}
 .meta {
   color: #aaa;
   font-size: 12px;
@@ -137,7 +143,7 @@ p.meta, li p.meta {
   font-size: 12px;
 }
 .label {
-  font-weight: normal;
+  font-weight: bold;
 }
 body.blog .comments p, body.forum .reply p {
   font-size: 12px;
@@ -145,7 +151,7 @@ body.blog .comments p, body.forum .reply p {
 
 /* Have followed links change color (e.g., in forums). */
 a.show-follow:visited {
-  color: #309;
+  color: #4A70B1;
   text-decoration: none;
 }
 
@@ -193,11 +199,11 @@ a.show-follow:visited {
   padding: 0;
 }
 .pagination {
-  border-bottom: 1px solid #eee;
+  /*border-bottom: 1px solid #eee;*/
   font-size: 12px;
   padding-bottom: 12px;
-  text-align: center;
-  margin-bottom: 12px;
+  /* text-align: center;
+  too much whitespace margin-bottom: 12px; */
 }
 
 
@@ -238,13 +244,20 @@ input.button, button, input[submit], input[button] {
   height: 32px;
   padding: 3px 12px;
 }
+div.button {
+	height: 20px;
+	width: 72px;
+	float: left;
+	margin-right: 20px;
+}
+
 .col1 textarea {
   width: 478px;
 }
 body.single-col .col1 form input {
   width: 312px;
 }
-label.checkbox {display: inline; float: left;margin-right: 12px;}
+label.checkbox {float: left;margin-right: 12px; width: 120px;}
 body.single-col .col1 form input.checkbox {
   display: inline;
   width: auto;
@@ -258,7 +271,7 @@ body.single-col .col1 form input.checkbox {
 
 #frmSearch {
   border: 0;
-  margin: 0 0 0 6px;
+  margin: 0 0 0 0px;
   padding: 0;
   position: relative;
   zoom: 1;
@@ -287,7 +300,8 @@ form a.add-recipient {
 /* Styles for when the site is (nearly) blank, as for new users. */
 
 h3.blankslate {
-  text-align: center;
+/*  Align with title instead - Bill L
+text-align: center; */
 }
 
 
@@ -316,3 +330,12 @@ strong { font-weight: bold; }
 .highlight  { background:#ff0; }
 .added      { background:#060; color: #fff; }
 .removed    { background:#900; color: #fff; }
+
+/* Bill's additions */
+.clear      {clear: both;}
+.disabled   {color: #c0c0c0;} /* greyed out to emphasize unavailability */
+
+#new_form_subject form {border-bottom: none;}
+#new_form_subject input, #photos .button, #tGalleries .button {width: 138px; vertical-align: top;}
+#new_form_subject .button {width: 72px;}
+.button_container {margin: 10px 0px;}

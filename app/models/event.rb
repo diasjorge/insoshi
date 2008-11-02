@@ -1,5 +1,25 @@
+# == Schema Information
+# Schema version: 20080916002106
+#
+# Table name: events
+#
+#  id                    :integer(4)      not null, primary key
+#  title                 :string(255)     default(""), not null
+#  description           :string(255)     
+#  person_id             :integer(4)      not null
+#  start_time            :datetime        not null
+#  end_time              :datetime        
+#  reminder              :boolean(1)      
+#  created_at            :datetime        
+#  updated_at            :datetime        
+#  event_attendees_count :integer(4)      default(0)
+#  privacy               :integer(4)      not null
+#
+
 class Event < ActiveRecord::Base
   include ActivityLogger
+
+  attr_accessible :title, :description
 
   MAX_DESCRIPTION_LENGTH = MAX_STRING_LENGTH
   MAX_LOCATION_LENGTH = MAX_STRING_LENGTH
@@ -12,7 +32,9 @@ class Event < ActiveRecord::Base
   has_many :event_attendees
   has_many :attendees, :through => :event_attendees, :source => :person
   has_many :comments, :as => :commentable, :order => 'created_at DESC'
-  has_many :activities, :foreign_key => "item_id", :dependent => :destroy
+  has_many :activities, :foreign_key => "item_id", :dependent => :destroy,
+                        :conditions => "item_type = 'Event'"
+  
 
   validates_presence_of :title, :start_time, :person, :privacy, :category
   validates_length_of :title, :maximum => MAX_TITLE_LENGTH

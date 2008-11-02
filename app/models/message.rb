@@ -1,14 +1,14 @@
 # == Schema Information
-# Schema version: 28
+# Schema version: 20080916002106
 #
 # Table name: communications
 #
-#  id                   :integer(11)     not null, primary key
+#  id                   :integer(4)      not null, primary key
 #  subject              :string(255)     
 #  content              :text            
-#  parent_id            :integer(11)     
-#  sender_id            :integer(11)     
-#  recipient_id         :integer(11)     
+#  parent_id            :integer(4)      
+#  sender_id            :integer(4)      
+#  recipient_id         :integer(4)      
 #  sender_deleted_at    :datetime        
 #  sender_read_at       :datetime        
 #  recipient_deleted_at :datetime        
@@ -17,7 +17,7 @@
 #  type                 :string(255)     
 #  created_at           :datetime        
 #  updated_at           :datetime        
-#  conversation_id      :integer(11)     
+#  conversation_id      :integer(4)      
 #
 
 class Message < Communication
@@ -117,6 +117,11 @@ class Message < Communication
     !replied_at.nil?
   end
   
+  # Return true if the message is new for the given person.
+  def new?(person)
+    not read? and person != sender
+  end
+  
   # Mark a message as read.
   def mark_as_read(time = Time.now)
     unless read?
@@ -158,7 +163,7 @@ class Message < Communication
     
     def send_receipt_reminder
       return if sender == recipient
-      @send_mail ||= Message.global_prefs.email_notifications? &&
+      @send_mail ||= !Message.global_prefs.nil? && Message.global_prefs.email_notifications? &&
                      recipient.message_notifications?
       PersonMailer.deliver_message_notification(self) if @send_mail
     end

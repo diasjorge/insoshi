@@ -1,10 +1,17 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
   
+  ## Application-wide values
+  def app_name
+    name = global_prefs.app_name
+    default = "Insoshi"
+    name.blank? ? default : name
+  end
+
   ## Menu helpers
   
   def menu
-    home     = menu_element("Home",   home_path)
+    home     = menu_element("Dashboard",   home_path)
     people   = menu_element("People", people_path)
     if Forum.count == 1
       forum = menu_element("Forum", forum_path(Forum.find(:first)))
@@ -12,17 +19,19 @@ module ApplicationHelper
       forum = menu_element("Forums", forums_path)
     end
     resources = menu_element("Resources", "http://docs.insoshi.com/")
+
     if logged_in? and not admin_view?
       profile  = menu_element("Profile",  person_path(current_person))
       messages = menu_element("Messages", messages_path)
-      blog     = menu_element("Blog",     blog_path(current_person.blog))
-      photos   = menu_element("Photos",   photos_path)
-      contacts = menu_element("Contacts",
-                              person_connections_path(current_person))
+      #blog     = menu_element("Blog",     blog_path(current_person.blog))
+      #photos   = menu_element("Photos",   photos_path)
+      #contacts = menu_element("Contacts",
+      #                        person_connections_path(current_person))
       events   = menu_element("Events", events_path)
-      links = [home, profile, contacts, messages, blog, people, forum]
-      # TODO: remove 'unless production?' once events are ready.
-      links.push(events) unless production?
+      #links = [home, profile, contacts, messages, blog, people, forum]
+      links = [home, profile, messages, people, forum]
+      # TODO: put this in once events are ready.
+      # links.push(events)
       
     elsif logged_in? and admin_view?
       home =    menu_element("Home", home_path)
@@ -42,7 +51,7 @@ module ApplicationHelper
       links.push(menu_element("About", about_url))
     end
   end
-  
+
   def menu_element(content, address)
     { :content => content, :href => address }
   end
@@ -57,6 +66,13 @@ module ApplicationHelper
     content_tag(:li, menu_link_to(link, options), :class => klass)
   end
   
+  def login_block
+    forgot = global_prefs.can_send_email? ? '<br />' + link_to('I forgot my password', new_password_reminder_path) : ''
+    content_tag(:span, link_to("Sign in", login_path) + ' or ' +
+                       link_to("Sign up", signup_path) + 
+                       forgot)
+  end
+
   # Return true if the user is viewing the site in admin view.
   def admin_view?
     params[:controller] =~ /admin/ and admin?
@@ -69,7 +85,7 @@ module ApplicationHelper
   # Set the input focus for a specific id
   # Usage: <%= set_focus_to 'form_field_label' %>
   def set_focus_to(id)
-    javascript_tag("$('#{id}').focus()");
+    javascript_tag(" $(document).ready(function(){$('##{id}').focus()});");
   end
   
   # Display text by sanitizing and formatting.
@@ -108,17 +124,25 @@ module ApplicationHelper
 
   def email_link(person, options = {})
     reply = options[:replying_to]
+    use_image = options[:use_image].nil? || options[:use_image]
+    to_all = options[:to_all]
     if reply
       path = reply_message_path(reply)
     else
       path = new_person_message_path(person)
     end
-    img = image_tag("icons/email.gif")
-    action = reply.nil? ? "Send a message" : "Send reply"
+    img = image_tag("icons/email_add.png")
+    if reply.nil?
+      action = to_all.nil? ? "Send Message" : "Message to Everyone"
+    else
+      action = "Send Reply"
+    end
     opts = { :class => 'email-link' }
-    str = link_to(img, path, opts)
-    str << "&nbsp;"
-    str << link_to_unless_current(action, path, opts)
+    if use_image
+      str = link_to(action + ' ' + img, path, opts)
+    else
+      str = link_to_unless_current(action, path, opts)
+    end
   end
 
   # Return a formatting note (depends on the presence of a Markdown library)

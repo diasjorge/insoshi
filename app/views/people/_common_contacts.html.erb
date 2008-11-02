@@ -1,18 +1,17 @@
-<%- if logged_in? -%>
-  <%- unless @common_contacts.empty? -%>
+<%- unless current_person?(@person) or @common_contacts.empty? -%>
     <h2>Common Contacts</h2>
-    <ul class="grid contacts small">
-      <%- @common_contacts.each do |contact| -%>
-        <li class="vcard">
-          <%= image_link(contact,
-                         :image_options => { :class => "photo fn" },
-                         :link_options =>  { :class => "url" }) %>
-        </li>
+    
+
+    <%- if @common_contacts.length > Person::MAX_DEFAULT_CONTACTS -%>
+        <div class="button see_all_link">
+          <%= link_to "See All",
+                      common_contacts_person_path(@person) %>
+        </div>
+    <%- end -%>    
+    <ul class="grid contacts medium">
+      <%- @some_common_contacts.each do |contact| -%>
+        <%= render :partial => 'shared/contact_medium',
+                   :locals => { :contact => contact } %>
       <%- end -%>
-      <li class="more">
-        <%= link_to "See all &raquo;", 
-                    common_contacts_person_path(@person) %>
-      </li>
     </ul>
-  <%- end -%>
 <%- end -%>

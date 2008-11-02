@@ -1,20 +1,16 @@
 <%- column_div :type => :primary do -%>
 <h2>Contacts for <%= h @person.name %></h2>
+<% if @person.connections.count > Person::MAX_DEFAULT_CONTACTS %>
+  <%= will_paginate @contacts %>
+<% end %>
 
 <% unless @contacts.empty? -%>
-  <%= will_paginate(@contacts) %>
-  <ul class="grid contacts medium">
-    <%- @contacts.each do |contact| -%>
-      <li class="vcard contact">
-        <%= image_link contact, :image_options => { :class => "photo" },
-                                :link_options => { :class => "url" },
-                                :vcard => true,
-                                :image => :bounded_icon %>
-      </li>
-    <%- end -%>
-      
-  </ul>
-  <%= will_paginate(@contacts) %>
+    <%= render :partial => 'shared/contacts_grid',
+               :locals => { :contacts => @contacts } %>
+
+  <% if @person.connections.count > Person::MAX_DEFAULT_CONTACTS %>
+    <%= will_paginate @contacts %>
+  <% end %>
 <% else %>
   <h3>No contacts (yet)</h3>
 <% end -%>
@@ -22,5 +18,5 @@
 <%- end -%>
 
 <%- column_div :type => :secondary do -%>
-  <%= render :partial => 'shared/minifeed' %>
+  <%= render :partial => 'searches/box' %>
 <%- end -%>

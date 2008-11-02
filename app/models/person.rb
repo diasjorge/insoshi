@@ -1,9 +1,9 @@
 # == Schema Information
-# Schema version: 28
+# Schema version: 20080916002106
 #
 # Table name: people
 #
-#  id                         :integer(11)     not null, primary key
+#  id                         :integer(4)      not null, primary key
 #  email                      :string(255)     
 #  name                       :string(255)     
 #  remember_token             :string(255)     
@@ -12,9 +12,9 @@
 #  remember_token_expires_at  :datetime        
 #  last_contacted_at          :datetime        
 #  last_logged_in_at          :datetime        
-#  forum_posts_count          :integer(11)     default(0), not null
-#  blog_post_comments_count   :integer(11)     default(0), not null
-#  wall_comments_count        :integer(11)     default(0), not null
+#  forum_posts_count          :integer(4)      default(0), not null
+#  blog_post_comments_count   :integer(4)      default(0), not null
+#  wall_comments_count        :integer(4)      default(0), not null
 #  created_at                 :datetime        
 #  updated_at                 :datetime        
 #  admin                      :boolean(1)      not null
@@ -24,6 +24,8 @@
 #  wall_comment_notifications :boolean(1)      default(TRUE)
 #  blog_comment_notifications :boolean(1)      default(TRUE)
 #  email_verified             :boolean(1)      
+#  avatar_id                  :integer(4)      
+#  identity_url               :string(255)     
 #
 
 class Person < ActiveRecord::Base
@@ -52,6 +54,7 @@ class Person < ActiveRecord::Base
   NUM_WALL_COMMENTS = 10
   NUM_RECENT = 8
   FEED_SIZE = 10
+  MAX_DEFAULT_CONTACTS = 12
   TIME_AGO_FOR_MOSTLY_ACTIVE = 1.month.ago
   # These constants should be methods, but I couldn't figure out how to use
   # methods in the has_many associations.  I hope you can do better.
@@ -90,7 +93,7 @@ class Person < ActiveRecord::Base
                                             :include => :person
 
   has_many :page_views, :order => 'created_at DESC'
-
+  has_many :galleries
   has_many :events
   has_many :event_attendees
   has_many :attendee_events, :through => :event_attendees, :source => :event
@@ -187,7 +190,7 @@ class Person < ActiveRecord::Base
 
   # Return some contacts for the home page.
   def some_contacts
-    contacts[(0...12)]
+    contacts[(0...MAX_DEFAULT_CONTACTS)]
   end
 
   # Contact links for the contact image raster.
@@ -227,17 +230,27 @@ class Person < ActiveRecord::Base
                  :limit => NUM_RECENT_MESSAGES)
   end
 
+  ## Forum helpers
+  def forum_posts
+    Topic.find(:all,
+               :conditions => [%(forum_id =? AND
+                                 person_id = ?), 1, id])
+  end
+
   def has_unread_messages?
-    Message.count(:all,
-                  :conditions => [%(recipient_id = ? AND
-                                    recipient_read_at IS NULL), id]) > 0
+    sql = %(recipient_id = :id
+            AND sender_id != :id
+            AND recipient_deleted_at IS NOT NULL
+            AND recipient_read_at IS NULL)
+    conditions = [sql, { :id => id }]
+    Message.count(:all, :conditions => conditions) > 0
   end
 
   ## Photo helpers
-
+  
   def photo
-    # This should only have one entry, but be paranoid.
-    photos.find_all_by_primary(true).first
+    # This should only have one entry, but use 'first' to be paranoid.
+    photos.find_all_by_avatar(true).first
   end
 
   # Return all the photos other than the primary one
@@ -360,20 +373,10 @@ class Person < ActiveRecord::Base
   end
 
   # Return the common connections with the given person.
-  def common_contacts_with(contact, page = 1)
-    sql = %(SELECT DISTINCT contact_id FROM connections
-            INNER JOIN people contact ON connections.contact_id = contact.id
-            WHERE ((person_id = ? OR person_id = ?)
-                   AND status = ? AND
-                   contact.deactivated = ? AND
-                   (contact.email_verified IS NULL
-                    OR contact.email_verified = ?)))
-    conditions = [sql, id, contact.id, Connection::ACCEPTED, false, true]
-    opts = { :page => page, :per_page => RASTER_PER_PAGE }
-    connections = 
-    @common_contacts ||= Person.find(Connection.
-                                     paginate_by_sql(conditions, opts).
-                                     map(&:contact_id)).paginate
+  def common_contacts_with(other_person, options = {})
+    # I tried to do this in SQL for efficiency, but failed miserably.
+    # Horrifyingly, MySQL lacks support for the INTERSECT keyword.
+    (contacts & other_person.contacts).paginate(options)
   end
   
   protected

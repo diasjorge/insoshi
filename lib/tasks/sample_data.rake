@@ -11,6 +11,7 @@ namespace :db do
     task :load => :environment do |t|
       Rake::Task["install"].invoke      
       @lipsum = File.open(File.join(DATA_DIRECTORY, "lipsum.txt")).read
+      make_preferences
       create_people
       make_connections
       make_messages(@lipsum)
@@ -56,8 +57,13 @@ def create_people
                               :description => @lipsum)
       person.last_logged_in_at = Time.now
       person.save
-      Photo.unsafe_create!(:uploaded_data => uploaded_file(photos[i], 'image/jpg'),
-                    :person => person, :primary => true)
+      gallery = Gallery.unsafe_create(:person => person, :title => 'Primary',
+                                      :description => 'My first gallery')
+      photo = uploaded_file(photos[i], 'image/jpg')
+      Photo.unsafe_create!(:uploaded_data => photo, :person => person,
+                           :primary => true, :avatar => true,
+                           :gallery => gallery)
+
     end
   end
 end
@@ -119,6 +125,10 @@ def make_feed
     activity.created_at = rand(20).hours.ago
     activity.save!
   end
+end
+
+def make_preferences
+  Preference.create!(:app_name => 'Insoshi', :domain => 'example.com', :smtp_server => 'mail.example.com', :email_notifications => false)
 end
 
 def uploaded_file(filename, content_type)

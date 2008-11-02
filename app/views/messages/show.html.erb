@@ -5,8 +5,8 @@
     <% heading = "Message from #{h @message.sender.name}" %>
   <% end %>
   
+  
   <h2><%= heading %></h2>
-
   <%= render :partial => 'message_nav' %>
   
   <h3 class="subject"><%= sanitize @message.subject %></h3>
@@ -20,5 +20,5 @@
 <%- end -%>
 
 <%- column_div :type => :secondary do -%>
-  <%= render :partial => 'shared/minifeed' %>
+  <%= render :partial => 'searches/box' %>
 <%- end -%>

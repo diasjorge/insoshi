@@ -187,6 +187,12 @@ describe Person do
         common_contacts.should == [@contact]
       end
 
+      it "should not include non-common contacts" do
+        admin = people(:admin)
+        Connection.connect(@person, admin)
+        @person.common_contacts_with(@kelly).should_not contain(admin)
+      end
+
       it "should exclude deactivated people from common contacts" do
         @contact.toggle!(:deactivated)
         common_contacts = @person.common_contacts_with(@kelly)
@@ -198,17 +204,27 @@ describe Person do
         @contact.email_verified = false; @contact.save!
         common_contacts = @person.common_contacts_with(@kelly)
         common_contacts.should be_empty
-      end      
+      end
+      
+      it "should exclude the person being viewed" do
+        Connection.connect(@person, @kelly)
+        @person.common_contacts_with(@kelly).should_not contain(@kelly)
+      end
+      
+      it "should exclude the person doing the viewing" do
+        Connection.connect(@person, @kelly)
+        @person.common_contacts_with(@kelly).should_not contain(@person)
+      end
     end
   end
 
   describe "photo methods" do
 
     before(:each) do
-      @photo_1 = mock_photo(:primary => true)
+      @photo_1 = mock_photo(:avatar => true)
       @photo_2 = mock_photo
       @photos = [@photo_1, @photo_2]
-      @photos.stub!(:find_all_by_primary).and_return([@photo_1])
+      @photos.stub!(:find_all_by_avatar).and_return([@photo_1])
       @person.stub!(:photos).and_return(@photos)
     end
 

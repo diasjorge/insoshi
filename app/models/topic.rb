@@ -1,13 +1,13 @@
 # == Schema Information
-# Schema version: 28
+# Schema version: 20080916002106
 #
 # Table name: topics
 #
-#  id                :integer(11)     not null, primary key
-#  forum_id          :integer(11)     
-#  person_id         :integer(11)     
+#  id                :integer(4)      not null, primary key
+#  forum_id          :integer(4)      
+#  person_id         :integer(4)      
 #  name              :string(255)     
-#  forum_posts_count :integer(11)     default(0), not null
+#  forum_posts_count :integer(4)      default(0), not null
 #  created_at        :datetime        
 #  updated_at        :datetime        
 #
@@ -24,7 +24,8 @@ class Topic < ActiveRecord::Base
   belongs_to :person
   has_many :posts, :order => :created_at, :dependent => :destroy,
                    :class_name => "ForumPost"
-  has_many :activities, :foreign_key => "item_id", :dependent => :destroy
+  has_many :activities, :foreign_key => "item_id", :dependent => :destroy,
+                        :conditions => "item_type = 'Topic'"
   validates_presence_of :name, :forum, :person
   validates_length_of :name, :maximum => MAX_NAME
   
