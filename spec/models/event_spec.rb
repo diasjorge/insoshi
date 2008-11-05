@@ -18,6 +18,10 @@ describe Event do
     Event.unsafe_create!(@valid_attributes)
   end
 
+  it 'should validate associated category exists' do
+    Event.create(:category_id => 1234).errors.on(:category).should_not be_blank
+  end
+
   describe "privacy settings" do
     before(:each) do
       @person = people(:aaron)

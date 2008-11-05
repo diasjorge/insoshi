@@ -46,8 +46,8 @@ class EventsController < ApplicationController
   end
 
   def create
-    @event = Event.new(params[:event].merge(:person => current_person))
-
+    @event = Event.new(params[:event])
+    @event.person = current_person
     respond_to do |format|
       if @event.save
         flash[:notice] = 'Event was successfully created.'

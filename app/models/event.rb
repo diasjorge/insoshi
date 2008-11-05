@@ -19,7 +19,7 @@
 class Event < ActiveRecord::Base
   include ActivityLogger
 
-  attr_accessible :title, :description
+  attr_accessible :title, :description, :privacy, :start_time, :end_time, :category_id, :location, :reminder
 
   MAX_DESCRIPTION_LENGTH = MAX_STRING_LENGTH
   MAX_LOCATION_LENGTH = MAX_STRING_LENGTH
@@ -37,6 +37,8 @@ class Event < ActiveRecord::Base
   
 
   validates_presence_of :title, :start_time, :person, :privacy, :category
+  validates_associated :category
+  
   validates_length_of :title, :maximum => MAX_TITLE_LENGTH
   validates_length_of :description, :maximum => MAX_DESCRIPTION_LENGTH, :allow_blank => true
   validates_length_of :location, :maximum => MAX_LOCATION_LENGTH, :allow_blank => true

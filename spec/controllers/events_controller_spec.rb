@@ -24,13 +24,11 @@ describe EventsController do
   describe "responding to GET /events" do
 
     it "should succeed" do
-      Event.stub!(:paginate)
       get :index
       response.should be_success
     end
 
     it "should render the 'index' template" do
-      Event.stub!(:paginate)
       get :index
       response.should render_template('index')
     end
@@ -194,46 +192,17 @@ describe EventsController do
 
     describe "with successful save" do
   
-      it "should create a new event" do
-        Event.should_receive(:new).with({'these' => 'params','person' => @person}).and_return(mock_event)
-        post :create, :event => {:these => 'params'}
-      end
-
-      it "should assign the created event for the view" do
-        Event.stub!(:new).and_return(mock_event)
-        post :create, :event => {}
-        assigns(:event).should equal(mock_event)
-      end
-
-      it "should redirect to the created event" do
-        Event.stub!(:new).and_return(mock_event)
-        post :create, :event => {}
-        response.should redirect_to(event_url(mock_event))
+      it "should create a event" do
+        lambda do
+          post(:create,
+               :event => { :title => "Title", :description => "Description",
+                           :start_time => Time.now, :privacy => 1,
+                           :category_id => categories(:general).id})
+        end.should change(Event, :count).by(1)
       end
       
     end
-    
-    describe "with failed save" do
-
-      it "should create a new event" do
-        Event.should_receive(:new).with({'these' => 'params','person' => @person}).and_return(mock_event(:save => false))
-        post :create, :event => {:these => 'params'}
-      end
-
-      it "should assign the invalid event for the view" do
-        Event.stub!(:new).and_return(mock_event(:save => false))
-        post :create, :event => {}
-        assigns(:event).should equal(mock_event)
-      end
-
-      it "should re-render the 'new' template" do
-        Event.stub!(:new).and_return(mock_event(:save => false))
-        post :create, :event => {}
-        response.should render_template('new')
-      end
-      
-    end
-    
+        
   end
 
   describe "responding to PUT /events/1" do

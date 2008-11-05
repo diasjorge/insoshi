@@ -36,14 +36,14 @@ module ActivitiesHelper
           %(#{person_link_with_image(activity.item.commenter)}
             commented on #{wall(activity)})
         end
-      end
-    when "Event"
-      # TODO: make recent/long versions for this
-      event = activity.item.commentable
-      commenter = activity.item.commenter
-      %(#{person_link_with_image(commenter)} commented on 
+      when "Event"
+        # TODO: make recent/long versions for this
+        event = activity.item.commentable
+        commenter = activity.item.commenter
+        %(#{person_link_with_image(commenter)} commented on 
         #{someones(event.person, commenter)} event: 
-        #{event_link(event.title, event)}.)
+        #{event_link(event.title, event)}.)       
+      end
     when "Connection"
       if activity.item.contact.admin?
         if recent
