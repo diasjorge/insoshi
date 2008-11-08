@@ -92,4 +92,30 @@ describe Event do
     end
   end
 
+  describe 'activity feed' do
+    before(:each) do
+      @event = Event.unsafe_create(@valid_attributes)
+    end
+
+    it 'should include activity' do
+      activity = Activity.find_by_item_id(@event)
+      @event.feed.should contain(activity)
+    end
+    it 'should include event attendees activities' do
+      attendee = people(:quentin)
+      event_attendee = @event.attend(attendee)
+      activity = Activity.find_by_item_id_and_item_type(event_attendee.id,
+                                                        event_attendee.class.to_s)
+      @event.feed.should contain(activity)
+    end
+    it 'should include event comments activities' do
+      commenter = people(:quentin)
+      comment = @event.comments.unsafe_create(:body => "Body",
+                                              :commenter => commenter)
+      activity = Activity.find_by_item_id_and_item_type(comment.id,
+                                                        comment.class.to_s)
+      @event.feed.should contain(activity)
+    end
+  end
+
 end

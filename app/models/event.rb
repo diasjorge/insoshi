@@ -65,9 +65,11 @@ class Event < ActiveRecord::Base
   end
 
   def feed
-    sql = "(item_id = ? AND item_type = 'Event') OR (item_type = 'EventAttendee' and item_id in (?)) OR (item_type = 'Comment' and item_id in (?))"
+    sql = %((item_id = ? AND item_type = 'Event') OR
+            (item_type = 'EventAttendee' AND item_id IN (?)) OR
+            (item_type = 'Comment' AND item_id IN (?)))
     activities = Activity.find(:all, 
-                               :conditions => [sql,Event.first,self.event_attendee_ids,self.comment_ids],
+                               :conditions => [sql,self[:id],self.event_attendee_ids,self.comment_ids],
                                :order => 'created_at desc',
                                :limit => FEED_SIZE)
   end
