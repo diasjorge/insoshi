@@ -37,12 +37,15 @@ module ActivitiesHelper
             commented on #{wall(activity)})
         end
       when "Event"
-        # TODO: make recent/long versions for this
         event = activity.item.commentable
         commenter = activity.item.commenter
-        %(#{person_link_with_image(commenter)} commented on 
-        #{someones(event.person, commenter)} event: 
-        #{event_link(event.title, event)}.)       
+        if recent
+          %(made a comment to event #{event_link(event.title, event)})
+        else
+          %(#{person_link_with_image(commenter)} commented on 
+            #{someones(event.person, commenter)} event
+            #{event_link(event.title, event)}.)
+        end
       end
     when "Connection"
       if activity.item.contact.admin?
@@ -99,12 +102,16 @@ module ActivitiesHelper
       end
     when "Event"
       event = activity.item
-      %(#{person_link_with_image(person)} has created a new event:
+      if recent
+        %(new event #{event_link(event.title, event)})
+      else
+        %(#{person_link_with_image(person)} has created a new event
         #{event_link(event.title, event)}.)
+      end
     when "EventAttendee"
       event = activity.item.event
       %(#{person_link_with_image(person)} is attending
-        #{someones(event.person, person)} event: 
+        #{someones(event.person, person)} event
         #{event_link(event.title, event)}.) 
     else
       raise "Invalid activity type #{activity_type(activity).inspect}"
@@ -205,7 +212,7 @@ module ActivitiesHelper
               "photo.png"
             when "Event"
               # TODO: replace with a png icon
-              "time.gif"
+              "calendar.gif"
             when "EventAttendee"
               # TODO: replace with a png icon
               "check.gif"
