@@ -1,6 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :categories
   map.resources :links
+  map.events_archive 'events/:year/:month/:day', :controller => 'events',
+  :action => 'index', :year => /\d{4}/, :month => /\d{1,2}/, :day => nil
   map.resources :events, :member => { :attend => :get, 
                                       :unattend => :get } do |event|
     event.resources :comments
